@@ -165,7 +165,10 @@ class EmployeeGUI:
             self.employee_list = [emp for emp in self.employee_list if emp['ID'] != emp_id]
             self.save_employees()
             self.refresh_employee_list()
-            messagebox.showinfo("Success", f"Employee ID {emp_id} removed successfully")
+            if not self.employee_list:
+                messagebox.showinfo("Info", "The employee list is now empty.")
+            else:
+                messagebox.showinfo("Success", f"Employee ID {emp_id} removed successfully")
 
     def add_employee(self):
         # Add a new employee
@@ -179,8 +182,11 @@ class EmployeeGUI:
 
     def validate_and_add_employee(self):
         # Validate and add employee data
-        if not self.name_entry.get() or not self.dept_entry.get():
-            raise ValueError("Name and Department cannot be empty")
+        if not self.name_entry.get():
+            raise ValueError("Name cannot be empty")
+        if not self.dept_entry.get():
+            raise ValueError("Department cannot be empty")
+
         try:
             salary = int(self.salary_entry.get())
             if salary < 0:
@@ -207,6 +213,8 @@ class EmployeeGUI:
         # Search for employees by name or department
         search_term = self.search_entry.get().lower()
         filtered_list = [emp for emp in self.employee_list if search_term in emp['name'].lower() or search_term in emp['department'].lower()]
+        if not filtered_list:
+            messagebox.showinfo("Info", "No employees match your search.")
         self.refresh_employee_list(filtered_list)
 
     def refresh_employee_list(self, employee_list=None):
@@ -229,8 +237,21 @@ class EmployeeGUI:
         # Load employee data from JSON file
         try:
             with open('employees.json', 'r') as file:
-                return json.load(file)
+                employees = json.load(file)
+                # Validate employee data structure
+                for emp in employees:
+                    if not all(key in emp for key in ["ID", "name", "department", "salary"]):
+                        raise ValueError("Invalid employee data format")
+                # Check for duplicate IDs
+                ids = [emp['ID'] for emp in employees]
+                if len(ids) != len(set(ids)):
+                    raise ValueError("Duplicate employee IDs found in the data file")
+                return employees
         except (FileNotFoundError, json.JSONDecodeError):
+            messagebox.showwarning("Warning", "Employee data file is missing or corrupted. Starting with an empty list.")
+            return []
+        except ValueError as e:
+            messagebox.showerror("Error", str(e))
             return []
 
     def save_employees(self):
@@ -238,7 +259,13 @@ class EmployeeGUI:
         with open('employees.json', 'w') as file:
             json.dump(self.employee_list, file, indent=4)
 
+    def on_closing(self):
+        # Handle application closing
+        if messagebox.askyesno("Exit", "Are you sure you want to exit?"):
+            self.root.destroy()
+
 # Initialize the window
 root = Tk()
 app = EmployeeGUI(root)
+root.protocol("WM_DELETE_WINDOW", app.on_closing)
 root.mainloop()
