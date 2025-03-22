@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import json
+import re  # Add this import for regular expression validation
 
 class EmployeeGUI:
     COLUMNS = ('ID', 'Name', 'Department', 'Salary')
@@ -134,6 +135,12 @@ class EmployeeGUI:
         # Validate and save employee data
         if not name_entry.get() or not dept_entry.get():
             raise ValueError("Name and Department cannot be empty")
+
+        if not re.match("^[a-zA-Z0-9 ]*$", name_entry.get()):
+            raise ValueError("Name cannot contain special characters")
+        if not re.match("^[a-zA-Z0-9 ]*$", dept_entry.get()):
+            raise ValueError("Department cannot contain special characters")
+
         try:
             salary = int(salary_entry.get())
             if salary < 0:
@@ -186,6 +193,11 @@ class EmployeeGUI:
             raise ValueError("Name cannot be empty")
         if not self.dept_entry.get():
             raise ValueError("Department cannot be empty")
+
+        if not re.match("^[a-zA-Z ]*$", self.name_entry.get()):
+            raise ValueError("Name cannot contain special characters or numbers")
+        if not re.match("^[a-zA-Z ]*$", self.dept_entry.get()):
+            raise ValueError("Department cannot contain special characters or numbers")
 
         try:
             salary = int(self.salary_entry.get())
