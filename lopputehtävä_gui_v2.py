@@ -107,21 +107,24 @@ class EmployeeGUI:
         # Create edit window
         edit_window = Toplevel(self.root)
         edit_window.title("Edit Employee")
-        edit_window.geometry('300x200')
+        edit_window.geometry('300x250')  # Adjusted height to accommodate new field
 
         name_entry = self.create_entry_with_label(edit_window, "Name:", values[1], 0)
         dept_entry = self.create_entry_with_label(edit_window, "Department:", values[2], 1)
         salary_entry = self.create_entry_with_label(edit_window, "Salary:", values[3], 2)
 
+        # Add percentage-based salary adjustment field
+        percent_entry = self.create_entry_with_label(edit_window, "Adjust Salary (%):", "", 3)
+
         def save_changes():
             try:
-                self.validate_and_save_employee(emp_id, name_entry, dept_entry, salary_entry)
+                self.validate_and_save_employee(emp_id, name_entry, dept_entry, salary_entry, percent_entry)
                 edit_window.destroy()
                 messagebox.showinfo("Success", "Employee updated successfully")
             except ValueError as e:
                 messagebox.showerror("Error", str(e))
 
-        ttk.Button(edit_window, text="Save Changes", command=save_changes).grid(row=3, column=0, columnspan=2, pady=20)
+        ttk.Button(edit_window, text="Save Changes", command=save_changes).grid(row=4, column=0, columnspan=2, pady=20)
 
     def create_entry_with_label(self, parent, text, value, row):
         # Create a label and entry widget with initial value
@@ -131,7 +134,7 @@ class EmployeeGUI:
         entry.grid(row=row, column=1, padx=5, pady=5)
         return entry
 
-    def validate_and_save_employee(self, emp_id, name_entry, dept_entry, salary_entry):
+    def validate_and_save_employee(self, emp_id, name_entry, dept_entry, salary_entry, percent_entry):
         # Validate and save employee data
         if not name_entry.get() or not dept_entry.get():
             raise ValueError("Name and Department cannot be empty")
@@ -147,6 +150,15 @@ class EmployeeGUI:
                 raise ValueError("Salary cannot be negative")
         except ValueError:
             raise ValueError("Salary must be a valid number")
+
+        # Apply percentage-based salary adjustment if provided
+        if percent_entry.get():
+            try:
+                percent = float(percent_entry.get())
+                salary += salary * (percent / 100)
+                salary = int(salary)  # Ensure salary remains an integer
+            except ValueError:
+                raise ValueError("Adjust Salary (%) must be a valid number")
 
         for emp in self.employee_list:
             if emp['ID'] == emp_id:
