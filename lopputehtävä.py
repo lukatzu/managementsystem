@@ -2,9 +2,10 @@
 
 """ This code is kinda obselete, but I will keep it for reference."""
 
-import json
+import json # importing the json module to handle JSON data
 
 def load_employees():
+    # load employees from a JSON file
     try:
         with open('employees.json', 'r') as file:
             return json.load(file)
@@ -12,6 +13,7 @@ def load_employees():
         return []
 
 def save_employees(employee_list):
+    # save employees to a JSON file
     with open('employees.json', 'w') as file:
         json.dump(employee_list, file, indent=4)
 
@@ -62,6 +64,7 @@ def update_employee(employee_list):
 
 
 def display_employees(employee_list):
+    # display all employees or filter by department
     departments = set(employee['department'] for employee in employee_list)
     department = input(f"Enter the department to filter by Departments: {', '.join(departments)} (leave empty to show all): ")
     for employee in employee_list:
@@ -71,6 +74,7 @@ def display_employees(employee_list):
             print(f"Name: {employee['name']} ID: {employee['ID']}")
 
 print("Welcome to the Employee Management System")
+# main loop for the program
 while True:
     print("\n1. Add Employee\n2. Remove Employee\n3. Update Employee\n4. Display Employees\n5. Exit")
     try:
