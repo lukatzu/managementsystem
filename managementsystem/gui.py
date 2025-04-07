@@ -3,7 +3,7 @@
 from tkinter import * # Import all tkinter classes and functions
 from tkinter import ttk, messagebox # Import ttk for themed widgets and messagebox for pop-up messages
 from employee_manager import EmployeeManager # Import EmployeeManager class for managing employee data
-from validators import validate_name, validate_department, validate_salary # Import validation functions for employee data
+from validators import validate_name, validate_department, validate_salary, validate_percent # Import validation functions for employee data
 
 # EmployeeGUI class to create the graphical user interface for the Employee Management System
 # This class handles the layout, widgets, and interactions for adding, viewing, editing, and removing employees.
@@ -24,6 +24,7 @@ class EmployeeGUI:
         self.root.geometry('600x400')
 
         self.manager = EmployeeManager()
+
         self.tab_control = ttk.Notebook(root)
         self.add_tab = ttk.Frame(self.tab_control)
         self.view_tab = ttk.Frame(self.tab_control)
@@ -99,6 +100,24 @@ class EmployeeGUI:
             self.tree.move(item, '', index)
         self.sort_orders[col] = not self.sort_orders[col]
 
+    # Add a new employee to the list
+    # This method retrieves the data from the entry fields, validates it, and adds the employee to the list.
+
+    def add_employee(self):
+        try:
+            name = self.name_entry.get()
+            dept = self.dept_entry.get()
+            salary = validate_salary(self.salary_entry.get())
+            validate_name(name)
+            validate_department(dept)
+
+            emp = self.manager.add_employee(name, dept, salary)
+            messagebox.showinfo("Success", f"Employee added with ID: {emp['ID']}")
+            self.clear_entries()
+            self.refresh_employee_list()
+        except ValueError as e:
+            messagebox.showerror("Error", str(e))
+
     # Edit an employee's information
     # This method opens a new window to edit the selected employee's information.
 
@@ -130,21 +149,19 @@ class EmployeeGUI:
                 name = name_entry.get()
                 dept = dept_entry.get()
                 salary = validate_salary(salary_entry.get())
+                validate_name(name)
+                validate_department(dept)
 
                 if percent_entry.get():
-                    percent = float(percent_entry.get())
+                    percent = validate_percent(percent_entry.get())
                     salary += int(salary * (percent / 100))
 
                 validate_name(name)
                 validate_department(dept)
 
-                self.manager.update_employee(emp_id, {
-                    'name': name,
-                    'department': dept,
-                    'salary': salary
-                })
-                edit_window.destroy()
+                self.manager.update_employee(emp_id, name, dept, salary)
                 self.refresh_employee_list()
+                edit_window.destroy()
                 messagebox.showinfo("Success", "Employee updated successfully")
             except ValueError as e:
                 messagebox.showerror("Error", str(e))
@@ -179,30 +196,6 @@ class EmployeeGUI:
             self.refresh_employee_list()
             messagebox.showinfo("Success", f"Employee ID {emp_id} removed successfully")
 
-    # Add a new employee to the list
-    # This method validates the input data and adds a new employee to the list.
-
-    def add_employee(self):
-        try:
-            name = self.name_entry.get()
-            dept = self.dept_entry.get()
-            salary = validate_salary(self.salary_entry.get())
-            validate_name(name)
-            validate_department(dept)
-
-            new_employee = {
-                "name": name,
-                "ID": self.manager.get_next_employee_id(),
-                "department": dept,
-                "salary": salary
-            }
-            self.manager.add_employee(new_employee)
-            messagebox.showinfo("Success", f"Employee added with ID: {new_employee['ID']}")
-            self.clear_entries()
-            self.refresh_employee_list()
-        except ValueError as e:
-            messagebox.showerror("Error", str(e))
-
     # Search for employees based on name or department
     # This method filters the employee list based on the search term and updates the treeview.
 
@@ -221,7 +214,7 @@ class EmployeeGUI:
             self.tree.delete(item)
 
         if employee_list is None:
-            employee_list = self.manager.get_employees()
+            employee_list = self.manager.employee_list
         for emp in employee_list:
             self.tree.insert('', 'end', values=(emp['ID'], emp['name'], emp['department'], emp['salary']))
 
