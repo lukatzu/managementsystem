@@ -1,12 +1,13 @@
 #Employee Management System with GUI
 
-from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
-import json
-import re  # Add this import for regular expression validation
+from tkinter import * # tkinter for GUI components
+from tkinter import ttk # tkinter for GUI components
+from tkinter import messagebox # messagebox for user notifications
+import json # JSON file for employee data storage
+import re  # expression validation
 
 class EmployeeGUI:
+    # Crete columns for the employee data
     COLUMNS = ('ID', 'Name', 'Department', 'Salary')
 
     def __init__(self, root):
@@ -98,6 +99,7 @@ class EmployeeGUI:
             messagebox.showwarning("Warning", "Please select an employee to edit")
             return
 
+        # Get selected item and its values
         item = self.tree.item(selected_item[0])
         emp_id = item['values'][0]
 
