@@ -43,6 +43,10 @@ def validate_salary(salary_str):
     except ValueError:
         raise ValueError("Salary must be a valid number")
     
+
+# Validate salary adjustment percentage
+# This function checks if the percentage is a valid number.   
+
 def validate_percent(percent_str):
     try:
         return float(percent_str)
