@@ -1,6 +1,6 @@
 # 2. Employee Management System without the GUI
 
-""" This code is kinda obselete, but I will keep it for reference."""
+""" This code is obsolete, but I will keep it for reference."""
 
 import json # importing the json module to handle JSON data
 
@@ -17,7 +17,7 @@ def save_employees(employee_list):
     with open('employees.json', 'w') as file:
         json.dump(employee_list, file, indent=4)
 
-# Replace the hardcoded employee_list with loading from JSON
+# Replace the employee_list with loading from JSON
 employee_list = load_employees()
 
 # defining a function to add an employee
