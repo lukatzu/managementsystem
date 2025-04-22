@@ -32,7 +32,6 @@ class EmployeeManager:
 
     # Save employees to the JSON file.
 
-
     def save_employees(self):
         with open(FILE_PATH, 'w') as file:
             json.dump(self.employee_list, file, indent=4)

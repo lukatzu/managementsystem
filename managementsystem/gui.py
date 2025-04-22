@@ -119,7 +119,7 @@ class EmployeeGUI:
             messagebox.showerror("Error", str(e))
 
     # Edit an employee's information
-    # This method opens a new window to edit the selected employee's information.
+    # This method opens a new window to edit the selected employee's information and warns if no employee is selected.
 
     def edit_employee(self):
         selected_item = self.tree.selection()
@@ -144,6 +144,9 @@ class EmployeeGUI:
         salary_entry = self.create_entry_with_label(edit_window, "Salary:", values[3], 2)
         percent_entry = self.create_entry_with_label(edit_window, "Adjust Salary (%):", "", 3)
 
+        # Function to save changes made in the edit window
+        # This method retrieves the data from the entry fields, validates it, and updates the employee's information.
+        
         def save_changes():
             try:
                 name = name_entry.get()
